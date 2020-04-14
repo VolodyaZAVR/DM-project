@@ -24,7 +24,7 @@ natural *N5(natural *A, natural *B) {
                 C -> digits[i] += (10 - (D -> digits[i])); 
             } 
         }
-        if(C -> digits[(C -> length) - 1] == 0) resize_natural(C, (C -> length) - 1);
+        while(C -> digits[(C -> length) - 1] == 0) resize_natural(C, (C -> length) - 1);
     }else if(q == 1){
 	    for(int i = 0; i < (C -> length); i++){
             if((D -> digits[i]) >= (C -> digits[i])) D -> digits[i] -= (C -> digits[i]); // subtraction
@@ -38,7 +38,7 @@ natural *N5(natural *A, natural *B) {
                 D -> digits[i] += (10 - (C -> digits[i])); 
             } 
         } 
-        if(D -> digits[(D -> length) - 1] == 0) resize_natural(D, (D -> length) - 1);
+        while(D -> digits[(D -> length) - 1] == 0) resize_natural(D, (D -> length) - 1);
     }else if(q == 0){ // when the numbers are equal
     	C -> digits[0] = 0;
     	resize_natural(C, 1);
