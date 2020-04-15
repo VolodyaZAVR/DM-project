@@ -107,7 +107,7 @@ unsigned char call_Z(unsigned char n) {
             {
                 integer *A = read_integer(FIRST_ARG_LI);
                 integer *B = read_integer(SECOND_ARG_LI);
-                integer *result = Z6(A);
+                integer *result = Z6(A, B);
                 
                 print("\n" RESULT);
                 write_integer(result);

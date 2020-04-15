@@ -20,7 +20,7 @@
 #define Z_3
 #define Z_4
 #define Z_5
-// #define Z_6
+#define Z_6
 #define Z_7
 // #define Z_8
 // #define Z_9
