@@ -34,7 +34,7 @@ integer *Z7(integer *A, integer *B)
 			R = Z4(L);
 			R -> sign = false;
 		}
-		if (k == 0)
+		else if (k == 0)
 		{
 			L = N5(A1, B1);
 			R = init_integer(L->length);
