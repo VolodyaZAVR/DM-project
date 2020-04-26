@@ -45,9 +45,10 @@ natural *N11(natural *A, natural *B)
 
     while(i--)
     {
-        N -> length += 1;
+    	if((N -> length != 1) || (N -> digits[0] != 0))
+		    N -> length += 1;
         resize_natural(N, N -> length);
-
+        
         for(b = (N -> length); b >= 2; b--)
             N -> digits[b - 1] = (N -> digits[b - 2]);
 
@@ -59,14 +60,15 @@ natural *N11(natural *A, natural *B)
         R -> digits[c++] = t;
 
         N = N9(N, D, t);
-        if((N -> length == 1) && (N -> digits[0] == 0))
-            N -> length = 0;
 
         C -> length -= 1;
     }
-
+    
+    free_natural(C);
+    free_natural(D);
     free_natural(N);
-    R -> length = c;
+    
+	R -> length = c;
 
     for(b = 0; b < c/2; b++)
     {
