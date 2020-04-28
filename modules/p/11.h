@@ -15,7 +15,9 @@ polynomial *P11(polynomial *A, polynomial *B)
     }
     while (ri -> factors != 0) {
         ri = P10(r1,r2);
+        free_polynomial(r1);
         r1 = r2;
+        free_polynomial(r2);
         r2 = ri;
     }
 
