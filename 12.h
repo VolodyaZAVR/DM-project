@@ -4,7 +4,7 @@ polynomial *P12(polynomial *input)
     size_t temp;
 
     temp = input -> degree;
-    res -> degree = temp;
+    res -> degree = temp - 1;
 
     while (temp != 0) {
         res -> factors[temp - 1] = input -> factors[temp] * temp--;
