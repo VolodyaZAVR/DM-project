@@ -1,9 +1,9 @@
-polynomial *P3(polynomial *A, integer *B)
+polynomial *P3(polynomial *A, fraction *B)
 {
 	polynomial *res = NULL;
 	fraction *temp = NULL, *temp1 = NULL;
 	res = copy_polynomial(A);
-	temp = Q3 (B);
+	temp = copy_fraction (B);
 	for (size_t i = 0; i <= A -> degree; i++)
 	{
 		temp1 = Q7 (A -> factors[i], temp);

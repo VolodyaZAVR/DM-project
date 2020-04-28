@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <string.h>
 
 #include "system.h"
 #include "io.h"
@@ -13,7 +14,7 @@
 /* Windows size_t printf fix */
 
 #if defined(_WIN32)
-    #define PR_SIZET PRIuMAX
+    #define PR_SIZET "%" PRIuMAX
 #else
     #define PR_SIZET "%zu"
 #endif
@@ -729,8 +730,6 @@ fraction *read_fraction(const char *message) {
                     
                     success = false;
                     
-                    print(UNEXP_SYMBOL "\n\n");
-                    
                     while(!feof(stdin) && current != '\n') current = getchar();
                 }
             }
@@ -807,8 +806,6 @@ fraction *read_fraction(const char *message) {
             } else {
                 
                 success = false;
-                
-                print(UNEXP_SYMBOL "\n\n");
                 
                 while(!feof(stdin) && current != '\n') current = getchar();
             }
@@ -947,19 +944,26 @@ polynomial *read_polynomial(const char *message) {
     
     /* Reading polynomial */
     
-    P -> degree = read_int(message);
+    P -> degree = read_int(DEGREE);
     
     P -> factors = mallocate(((P -> degree) + 1) * sizeof(fraction), &offset);
     
     P -> offset_factors = offset;
     
+    char hint[4 + 20 + strlen(DEG_FACTOR)];
+    
+    strcpy(hint, "    ");
+    
     for(size_t i = P -> degree; i != SIZE_MAX; --i) {
         
-        fprintf(stderr, PR_SIZET, i);
-        fraction *Q = read_fraction(DEG_FACTOR);
+        int length = sprintf(hint + 4, PR_SIZET, i);
+        strcpy(hint + 4 + length, DEG_FACTOR);
+        fraction *Q = read_fraction(hint);
         
         P -> factors[i] = Q;
     }
+    
+    print("\n");
     
     return P;
 }
@@ -969,6 +973,7 @@ void write_polynomial(polynomial *P) {
     
     for(size_t i = (P -> degree); i != SIZE_MAX; --i) {
         
+        fprintf(stderr, "    ");
         fprintf(stderr, PR_SIZET, i);
         fprintf(stderr, DEG_FACTOR_OUT);
         
