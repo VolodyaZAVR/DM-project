@@ -7,7 +7,8 @@ polynomial *P12(polynomial *input)
     res -> degree = temp - 1;
 
     while (temp != 0) {
-        res -> factors[temp - 1] = input -> factors[temp] * temp--;
+        res -> factors[temp - 1] = (fraction *) ((long long unsigned int) input->factors[temp] * temp);
+        temp--;
     }
 
     return res;
