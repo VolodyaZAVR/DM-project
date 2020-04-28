@@ -14,7 +14,7 @@
 /* Windows size_t printf fix */
 
 #if defined(_WIN32)
-    #define PR_SIZET PRIuMAX
+    #define PR_SIZET "%" PRIuMAX
 #else
     #define PR_SIZET "%zu"
 #endif
