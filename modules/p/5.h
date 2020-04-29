@@ -1,3 +1,5 @@
+//Чугуй Владимир 9305
+//Старший коэффициент многочлена
 fraction *P5(polynomial *A)
 {
 	fraction *res = NULL;
