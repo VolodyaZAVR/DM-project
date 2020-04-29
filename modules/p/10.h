@@ -1,3 +1,5 @@
+//Кашин Андрей 9305
+//Остаток от деления многочлена на многочлен при делении с остатком
 polynomial *P10(polynomial *A, polynomial *B)
 {
     polynomial *res = NULL, *res1 = NULL, *res2 = NULL;
