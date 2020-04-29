@@ -1,4 +1,5 @@
-
+//Кашин Андрей 9305
+//Частное от деления многочлена на многочлен при делении с остатком
 polynomial *P9(polynomial *A, polynomial *B) 
 {
     size_t degree, i = 0;
