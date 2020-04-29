@@ -1,3 +1,5 @@
+//Когутенко Андрей 9305
+//Производная многочлена
 polynomial *P12(polynomial *input)
 {
     polynomial *res = NULL;
