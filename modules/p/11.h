@@ -1,3 +1,5 @@
+//Есин Артём 9305
+//НОД многочленов
 polynomial *P11(polynomial *A, polynomial *B)
 {
     polynomial *r1 = NULL,*r2 = NULL,*ri = NULL;
