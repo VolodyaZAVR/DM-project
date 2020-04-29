@@ -6,7 +6,7 @@
 
 Это лишь экспериментальная версия оболочки. В ней запросто могут найтись ошибки и недоработки. Обо всех проблемах, пожалуйста, сообщайте лично или через "Issues" на GitHub.
 
-### [Исполняемый файл для Windows (.exe)](https://github.com/VolodyaZAVR/DM-project/blob/master/main.exe)
+### [Исполняемый файл для Windows (.exe)](https://github.com/VolodyaZAVR/DM-project/raw/master/main.exe)
 
 ### Как это работает?
 
