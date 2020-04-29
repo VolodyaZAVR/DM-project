@@ -1,3 +1,5 @@
+//Гришин Илья 9305
+//Умножение многочлена на рациональное число
 polynomial *P3(polynomial *A, fraction *B)
 {
 	polynomial *res = NULL;
