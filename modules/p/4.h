@@ -1,3 +1,5 @@
+//Гришин Илья 9305
+//Умножение многочлена на x^k
 polynomial *P4(polynomial *A, size_t B)
 {
 	polynomial *res = NULL;
