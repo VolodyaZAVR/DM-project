@@ -1,6 +1,7 @@
 # Коллоквиум по дискретной математике
 
 Статус репозитория:
+
 [![Build status](https://github.com/VolodyaZAVR/DM-project/workflows/Build/badge.svg)](https://github.com/VolodyaZAVR/DM-project/actions?query=workflow%3ABuild)
 [![Test status](https://github.com/VolodyaZAVR/DM-project/workflows/Test/badge.svg)](https://github.com/VolodyaZAVR/DM-project/actions?query=workflow%3ATest)
 
