@@ -1,33 +1,31 @@
-//Чугуй Владимир 9305
-//Сложение дробных чисел
+// Чугуй Владимир 9305
+// Сложение дробных чисел
+
 fraction *Q5(fraction *A, fraction *B) {
-    fraction *R = NULL, *R1 = NULL;
-    natural *N = NULL;
-    integer *C = NULL, *D = NULL, *ResChisl = NULL, *tempA = NULL, *tempB = NULL;
-
-    tempA = Z4(A->denominator);
-    tempB = Z4(B->denominator);
-    N = N8(A->denominator, B->denominator);//новый знаменатель
-    C = Z8(A->numerator, tempB);//новый числитель первой дроби
-    D = Z8(B->numerator, tempA);//новый числитель второй дроби
-    ResChisl = Z6(C, D);// сложение новых числителей
-
-    R = init_fraction(ResChisl, N); //составление новой дроби
-    R1 = Q1(R); // сокращение новой дроби
-
-    //очистка
-    free_natural(N);
-    N = NULL;
-    free_integer(ResChisl);
-    ResChisl = NULL;
-    free_integer(C);
-    C = NULL;
-    free_integer(D);
-    D = NULL;
-    free_fraction(R);
-    R = NULL;
-    free_integer(tempA);
-    free_integer(tempB);
-
-    return R1;
+    
+    integer *A_int_denom = Z4(A -> denominator);
+    integer *B_int_denom = Z4(B -> denominator);
+    
+    integer *first  = Z8(A -> numerator, B_int_denom);  // Первое слагаемое
+    integer *second = Z8(B -> numerator, A_int_denom);  // Второе слагаемое
+    
+    free_integer(A_int_denom);
+    free_integer(B_int_denom);
+    
+    integer *numerator_sum = Z6(first, second);         // Суммирование домноженных частей
+    
+    free_integer(first);
+    free_integer(second);
+    
+    natural *common_denom = N8(A -> denominator, B -> denominator); // Общий знаменатель
+    
+    fraction *C = init_fraction(numerator_sum, common_denom);       // Преобразование в дробь
+    
+    free_natural(common_denom);
+    
+    fraction *result = Q1(C);   // Сокращение полученной дроби
+    
+    free_fraction(C);
+    
+    return result;
 }
