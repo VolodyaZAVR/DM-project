@@ -1,64 +1,19 @@
-//Любоневич Роман 9305
-//Умножение дробей
+// Любаневич Роман 9305
+// Умножение дробей
+
 fraction *Q7(fraction *A, fraction *B) {
-    integer *C, *D, *tempInt;
-    natural *tempNat;
-    size_t i;
-
-    C = copy_integer(A->numerator);
-
-    D = copy_integer(B->numerator);
-
-    tempInt=C;
-    C = Z8(C, D);//Вычисление числителя
-    free_integer(tempInt);
-
-    integer *N, *P;
-
-    N = init_integer(B->denominator->length);
-    N->sign = true;
-    for (i = 0; i < (N->length); i++)
-        N->digits[i] = (B->denominator->digits[i]);
-
-    P = init_integer(A->denominator->length);
-    P->sign = true;
-    for (i = 0; i < (P->length); i++)
-        P->digits[i] = (A->denominator->digits[i]);
-
-    tempInt=P;
-    P = Z8(N, P);//Вычисление знаменателя
-    free_integer(tempInt);
-
-    if ((P->sign) == false) C = Z3(C);
-
-    natural *G = init_natural(P->length);
-    for (i = 0; i < (G->length); i++)
-        G->digits[i] = (P->digits[i]);
-
-    natural *K = init_natural(C->length);
-    for (size_t j = 0; j < (C->length); j++) K->digits[j] = C->digits[j];
-
-    natural *F = N13(K, G);//Сокращение дроби
-
-    tempNat=K;
-    K = N11(K, F);
-    free_natural(tempNat);
-    tempNat=G;
-    G = N11(G, F);
-    free_natural(tempNat);
-
-    C->length = K->length;
-    for (size_t j = 0; j < (K->length); j++) C->digits[j] = K->digits[j];
-
-    fraction *R = init_fraction(C, G);
-
-    free_natural(G);
-    free_natural(K);
-    free_natural(F);
-    free_integer(P);
-    free_integer(C);
-    free_integer(N);
-    free_integer(D);
-
-    return R;
+    
+    integer *num   = Z8(A -> numerator, B -> numerator);        // Умножение числителей
+    natural *denom = N8(A -> denominator, B -> denominator);    // Умножение знаменателей
+    
+    fraction *C = init_fraction(num, denom);
+    
+    free_integer(num);
+    free_natural(denom);
+    
+    fraction *result = Q1(C);    // Сокращение дроби
+    
+    free_fraction(C);
+    
+    return result;
 }
