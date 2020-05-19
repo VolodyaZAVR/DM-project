@@ -12,7 +12,7 @@ fraction *Q5(fraction *A, fraction *B) {
     free_integer(A_int_denom);
     free_integer(B_int_denom);
     
-    integer *numerator_sum = Z6(first, second);         // Суммирование домноженных частей
+    integer *numerator_sum = Z6(first, second); // Суммирование домноженных частей
     
     free_integer(first);
     free_integer(second);
