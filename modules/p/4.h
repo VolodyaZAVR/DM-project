@@ -1,11 +1,11 @@
-//Гришин Илья 9305
-//Умножение многочлена на x^k
+// Гришин Илья 9305
+// Умножение многочлена на x^k
+
 polynomial *P4(polynomial *A, size_t B)
 {
-	polynomial *res = NULL;
-    res = init_polynomial(A -> degree + B);
-    
+	polynomial *res = init_polynomial(A -> degree + B);
     integer *numerator = init_integer(1);
+    
     numerator -> sign = true;
     numerator -> digits[0] = 0;
     
