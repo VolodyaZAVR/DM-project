@@ -21,6 +21,7 @@ fraction *Q5(fraction *A, fraction *B) {
     
     fraction *C = init_fraction(numerator_sum, common_denom);       // Преобразование в дробь
     
+    free_integer(numerator_sum);
     free_natural(common_denom);
     
     fraction *result = Q1(C);   // Сокращение полученной дроби
