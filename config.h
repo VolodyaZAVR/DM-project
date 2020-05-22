@@ -42,7 +42,7 @@
 #define P_5
 #define P_6
 // #define P_7
-// #define P_8
+#define P_8
 // #define P_9
 // #define P_10
 // #define P_11
