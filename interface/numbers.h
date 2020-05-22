@@ -131,7 +131,9 @@ polynomial *init_polynomial(size_t degree);                 /* Initialize */
 
 polynomial *copy_polynomial(polynomial *P);                 /* Copy */
 
-void resize_polynomial(polynomial *P, size_t new_degree);  /* Change degree */
+void resize_polynomial(polynomial *P, size_t new_degree);   /* Change degree */
+
+void normalize_polynomial(polynomial *P);                   /* Remove unnecessary zero factors */
 
 void free_polynomial(polynomial *P);                        /* Remove from memory */
 
@@ -916,8 +918,25 @@ void resize_polynomial(polynomial *P, size_t new_degree) {
             free_fraction(P -> factors[i]);
     }
     
-    P -> factors = reallocate(P, (new_degree) + 1 * sizeof(fraction), P -> offset_factors);
+    P -> factors = reallocate(P -> factors, (new_degree + 1) * sizeof(fraction), P -> offset_factors);
     P -> degree = new_degree;
+}
+
+
+void normalize_polynomial(polynomial *P) {
+    
+    size_t real_deg = P -> degree;
+    
+    while(real_deg != 0) {
+        
+        if(P -> factors[real_deg] -> numerator -> length != 1 || 
+           P -> factors[real_deg] -> numerator -> digits[0] != 0)
+           break;
+        
+        --real_deg;
+    }
+    
+    resize_polynomial(P, real_deg);
 }
 
 
