@@ -131,12 +131,13 @@ unsigned char call_P(unsigned char n) {
             case 7:
             {
                 polynomial *A = read_polynomial(FIRST_POLY);
-                size_t result = P7(A);
+                fraction *result = P7(A);
                 
                 print("\n" RESULT);
-                write_int((int)result);
+                write_fraction(result);
                 
                 free_polynomial(A);
+                free_fraction(result);
                 
                 break;
             }
