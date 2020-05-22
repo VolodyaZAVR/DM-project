@@ -15,7 +15,5 @@ polynomial *P3(polynomial *A, fraction *B)
         res -> factors[i] = temp;
 	}
 	
-	free_fraction(temp);
-	
 	return res;
 }

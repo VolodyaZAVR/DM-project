@@ -1,57 +1,39 @@
-//Кашин Андрей 9305
-//Частное от деления многочлена на многочлен при делении с остатком
+// Кашин Андрей 9305
+// Частное от деления многочлена на многочлен при делении с остатком
+
+#include <stdint.h>
+
 polynomial *P9(polynomial *A, polynomial *B) 
 {
-    size_t degree, i = 0;
-
-    polynomial *res = NULL, *temp = NULL, *temp2 = NULL, *divider = NULL, *dividend = NULL;
+    polynomial *dividend = copy_polynomial(A);
+    polynomial *C = init_polynomial(A -> degree - B -> degree);
     
-	if (P6(A) >= P6(B)) 
-	{
-        dividend = copy_polynomial(A);
-        divider = copy_polynomial(B);
+    size_t dividend_deg = A -> degree;
+    
+    for(size_t i = C -> degree; i != SIZE_MAX; ++i) {
         
-		degree = dividend -> degree - divider -> degree; // старшая степень результата
+        // Вычисляем частное от деления старшего коэффициента делимого
+        // на старший коэффициент делителя
         
-		res = init_polynomial(degree);
+        fraction *quotient = Q8(dividend -> factors[dividend_deg], B -> factors[B -> degree]);
         
-		while ((P6(dividend) >= P6(divider)) && i <= res -> degree) {
-            res -> factors[degree] = Q8(dividend -> factors[dividend -> degree],
-            
-			divider -> factors[divider -> degree]);   // текущий коэф перед степенью
-            
-			temp = dividend;
-            
-			temp2 = P8(divider, res); // полином полученный умножением делителя и текущего результата
-            
-			dividend = P2(dividend, temp2);// делимое тепер =делимое - результат умножения
-            
-			free_polynomial(temp);
-            free_polynomial(temp2);
-            
-			degree = dividend -> degree - divider -> degree; // степень следующего коэф результата
-            
-			i++;// счетчик проходов
-        }
- 
-        free_polynomial(dividend);
-        free_polynomial(divider);
-
-    } 
-	else 
-	{    // если делитель больше делимого , частное =0
-        res = init_polynomial(1);
+        // Домножаем делитель на полученное число
         
-		res->factors[0]->numerator->length = 1;
-        res->factors[0]->numerator->digits[0] = 0;
+        polynomial *temp = P3(B, quotient);
         
-		res->factors[0]->denominator->length = 1;
-        res->factors[0]->denominator->digits[0] = 1;
+        // Вычитаем из делимого
         
-		res->degree = 0;
-
+        write_polynomial(temp);
+        
+        polynomial *old = dividend;
+        dividend = P2(dividend, temp);
+        free_polynomial(old);
+        free_polynomial(temp);
+        
+        C -> factors[i] = quotient;
+        
+        --dividend_deg;
     }
     
-    return (res);
-
+    return C;
 }
