@@ -18,7 +18,11 @@ polynomial *P1(polynomial *A, polynomial *B)
     }
     
     for(i = 0; i <= deg; i++)
+    {
+        fraction *old = C -> factors[i];
         C -> factors[i] = Q5(A -> factors[i], B -> factors[i]);
+        free_fraction(old);
+    }
     
     normalize_polynomial(C);
     

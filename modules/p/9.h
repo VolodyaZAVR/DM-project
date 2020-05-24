@@ -1,39 +1,81 @@
 // Кашин Андрей 9305
 // Частное от деления многочлена на многочлен при делении с остатком
 
-#include <stdint.h>
-
 polynomial *P9(polynomial *A, polynomial *B) 
 {
-    polynomial *dividend = copy_polynomial(A);
-    polynomial *C = init_polynomial(A -> degree - B -> degree);
+    polynomial *C;
     
-    size_t dividend_deg = A -> degree;
-    
-    for(size_t i = C -> degree; i != SIZE_MAX; ++i) {
+    if(B -> degree == 0) {
         
-        // Вычисляем частное от деления старшего коэффициента делимого
-        // на старший коэффициент делителя
+        // Почленное деление
         
-        fraction *quotient = Q8(dividend -> factors[dividend_deg], B -> factors[B -> degree]);
+        fraction *divisor = B -> factors[0];
         
-        // Домножаем делитель на полученное число
+        C = copy_polynomial(A);
         
-        polynomial *temp = P3(B, quotient);
+        for(size_t i = 0; i <= C -> degree; ++i) {
+            
+            fraction *old = C -> factors[i];
+            C -> factors[i] = Q8(old, divisor);
+            free_fraction(old);
+        }
         
-        // Вычитаем из делимого
+    } else {
         
-        write_polynomial(temp);
+        // Деление "столбиком"
         
-        polynomial *old = dividend;
-        dividend = P2(dividend, temp);
-        free_polynomial(old);
-        free_polynomial(temp);
+        polynomial *dividend = copy_polynomial(A);
         
-        C -> factors[i] = quotient;
+        C = init_polynomial(A -> degree - B -> degree);
         
-        --dividend_deg;
+        // Изначально коэффициенты частного - нули
+        
+        integer *num = init_integer(1);
+        num -> sign = true;
+        num -> digits[0] = 0;
+        
+        natural *denom = init_natural(1);
+        denom -> digits[0] = 1;
+        
+        for(size_t i = 0; i <= C -> degree; ++i)
+            C -> factors[i] = init_fraction(num, denom);
+        
+        free_integer(num);
+        free_natural(denom);
+        
+        while(dividend -> degree >= B -> degree) {
+            
+            // Пока степень делимого больше или равна степени делителя
+            
+            // Делим старший коэффициент
+            
+            fraction *quotient = Q8(dividend -> factors[dividend -> degree], B -> factors[B -> degree]);
+            
+            // Записываем результат
+            
+            size_t deg = dividend -> degree - B -> degree;
+            
+            C -> factors[deg] = quotient;
+            
+            // Вычитаем домноженный делитель
+            
+            polynomial *old = dividend;
+            polynomial *sub = P4(B, deg);
+            
+            dividend = P2(dividend, sub);
+            
+            write_fraction(sub -> factors[2]);
+            write_fraction(sub -> factors[1]);
+            write_fraction(sub -> factors[0]);
+            
+            free_polynomial(old);
+            free_polynomial(sub);
+            
+            break;
+        }
     }
+    
+    normalize_polynomial(C);
     
     return C;
 }

@@ -45,7 +45,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P2(A, B);
                 
-                print("\n" RESULT);
+                print("\n" RESULT "\n");
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -63,7 +63,7 @@ unsigned char call_P(unsigned char n) {
                 fraction *B = read_fraction(SECOND_FRACT);
                 polynomial *result = P3(A, B);
                 
-                print("\n" RESULT);
+                print("\n" RESULT "\n");
                 write_polynomial(result);
                 
                 free_polynomial(A);
