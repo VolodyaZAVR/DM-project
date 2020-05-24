@@ -37,11 +37,12 @@ polynomial *P9(polynomial *A, polynomial *B)
         natural *denom = init_natural(1);
         denom -> digits[0] = 1;
         
-        for(size_t i = 0; i <= C -> degree; ++i)
-            C -> factors[i] = init_fraction(num, denom);
+        fraction *zero = init_fraction(num, denom);
         
-        free_integer(num);
-        free_natural(denom);
+        for(size_t i = 0; i <= C -> degree; ++i)
+            C -> factors[i] = copy_fraction(zero);
+        
+        free_fraction(zero);
         
         while(dividend -> degree >= B -> degree) {
             
@@ -64,14 +65,8 @@ polynomial *P9(polynomial *A, polynomial *B)
             
             dividend = P2(dividend, sub);
             
-            write_fraction(sub -> factors[2]);
-            write_fraction(sub -> factors[1]);
-            write_fraction(sub -> factors[0]);
-            
             free_polynomial(old);
             free_polynomial(sub);
-            
-            break;
         }
     }
     
