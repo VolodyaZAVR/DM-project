@@ -50,5 +50,7 @@ polynomial *P8(polynomial *A, polynomial *B)
         }
     }
     
+    normalize_polynomial(C);
+    
     return C;
 }

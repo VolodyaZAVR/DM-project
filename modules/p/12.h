@@ -77,5 +77,7 @@ polynomial *P12(polynomial *P) {
         free_natural(denom);
     }
     
+    normalize_polynomial(result);
+    
     return result;
 }

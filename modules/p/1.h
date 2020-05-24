@@ -20,5 +20,7 @@ polynomial *P1(polynomial *A, polynomial *B)
     for(i = 0; i <= deg; i++)
         C -> factors[i] = Q5(A -> factors[i], B -> factors[i]);
     
+    normalize_polynomial(C);
+    
     return C;
 }

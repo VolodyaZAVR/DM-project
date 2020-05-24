@@ -20,5 +20,7 @@ polynomial *P2(polynomial *A, polynomial *B)
     for(i = 0; i <= deg; i++)
         C -> factors[i] = Q6(A -> factors[i], B -> factors[i]);
     
+    normalize_polynomial(C);
+    
     return C;
 }

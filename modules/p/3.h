@@ -14,6 +14,8 @@ polynomial *P3(polynomial *A, fraction *B)
         
         res -> factors[i] = temp;
 	}
+    
+    normalize_polynomial(res);
 	
 	return res;
 }

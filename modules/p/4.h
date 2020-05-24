@@ -26,5 +26,7 @@ polynomial *P4(polynomial *A, size_t B)
         res -> factors[i + B] = copy_fraction(A -> factors[i]);
     }
     
+    normalize_polynomial(res);
+    
 	return res;
 }
