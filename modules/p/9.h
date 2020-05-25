@@ -61,12 +61,15 @@ polynomial *P9(polynomial *A, polynomial *B)
             // Вычитаем домноженный делитель
             
             polynomial *old = dividend;
-            polynomial *sub = P4(B, deg);
+            polynomial *multiplied = P3(B, quotient);
+            polynomial *shifted = P4(multiplied, deg);
             
-            dividend = P2(dividend, sub);
+            free_polynomial(multiplied);
+            
+            dividend = P2(dividend, shifted);
             
             free_polynomial(old);
-            free_polynomial(sub);
+            free_polynomial(shifted);
         }
     }
     

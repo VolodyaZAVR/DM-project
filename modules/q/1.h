@@ -28,6 +28,7 @@ fraction *Q1(fraction *A)
         natural *P_divided = N11(P, GCD);
         natural *Q_divided = N11(Q, GCD);
         
+        free_natural(GCD);
         free_natural(P);
         
         integer *numerator = Z4(P_divided);

@@ -902,7 +902,7 @@ polynomial *copy_polynomial(polynomial *P) {
     polynomial *result = init_polynomial(P -> degree);
     
     for(size_t i = 0; i <= (P -> degree); ++i)
-        result -> factors[i] = P -> factors[i];
+        result -> factors[i] = copy_fraction(P -> factors[i]);
     
     return result;
 }
