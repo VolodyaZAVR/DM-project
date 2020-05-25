@@ -1,27 +1,54 @@
-//Есин Артём 9305
-//НОД многочленов
+// Есин Артём 9305
+// НОД многочленов
+
 polynomial *P11(polynomial *A, polynomial *B)
 {
-    polynomial *r1 = NULL,*r2 = NULL,*ri = NULL;
-
-    size_t sizeA,sizeB;
-    sizeA = P6(A);
-    sizeB = P6(B);
-
-    if (sizeA >= sizeB) {
-        r1 = P10(A,B);
-        r2 =P10(B,r1);
-    } else if (sizeA < sizeB) {
-        r1 = P10(B,A);
-        r2 = P10(A,r1);
+    polynomial *X;
+    polynomial *Y;
+    
+    if(A -> degree >= B -> degree) {
+        
+        X = copy_polynomial(A);
+        Y = copy_polynomial(B);
+        
+    } else {
+        
+        X = copy_polynomial(B);
+        Y = copy_polynomial(A);
     }
-    while (ri -> factors[0] != 0) {
-        ri = P10(r1,r2);
-        free_polynomial(r1);
-        r1 = r2;
-        free_polynomial(r2);
-        r2 = ri;
+    
+    polynomial *remainder = P10(X, Y);
+    
+    while(remainder -> degree != 0 ||
+          remainder -> factors[0] -> numerator -> digits[0] != 0)
+    {
+        free_polynomial(X);
+        
+        X = Y;
+        
+        Y = remainder;
+        
+        remainder = P10(X, Y);
     }
-
-    return r1;
+    
+    free_polynomial(X);
+    free_polynomial(remainder);
+    
+    fraction *GCD_LCM = P7(Y);
+    
+    for(size_t i = 0; i <= Y -> degree; ++i) {
+        
+        integer *new_num = Z9(Y -> factors[i] -> numerator, GCD_LCM -> numerator);
+        natural *new_denom = N11(GCD_LCM -> denominator, Y -> factors[i] -> denominator);
+        
+        free_integer(Y -> factors[i] -> numerator);
+        free_natural(Y -> factors[i] -> denominator);
+        
+        Y -> factors[i] -> numerator = new_num;
+        Y -> factors[i] -> denominator = new_denom;
+    }
+    
+    normalize_polynomial(Y);
+    
+    return Y;
 }

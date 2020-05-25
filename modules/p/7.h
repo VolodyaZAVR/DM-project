@@ -4,7 +4,7 @@
 fraction *P7(polynomial *P) {
     
     natural *GCD = Z1(P -> factors[0] -> numerator);
-    natural *LCM = P -> factors[0] -> denominator;
+    natural *LCM = copy_natural(P -> factors[0] -> denominator);
     
     for(size_t i = 1; i <= P -> degree; ++i) {
         
@@ -22,7 +22,6 @@ fraction *P7(polynomial *P) {
         LCM = N14(LCM, denom);
         
         free_natural(temp_LCM);
-        free_natural(denom);
     }
     
     integer *GCD_integer = Z4(GCD);
