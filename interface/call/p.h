@@ -226,6 +226,22 @@ unsigned char call_P(unsigned char n) {
             }
         #endif
         
+        #ifdef P_13
+            case 13:
+            {
+                polynomial *A = read_polynomial(FIRST_POLY);
+                polynomial *result = P13(A);
+                
+                print("\n" RESULT "\n");
+                write_polynomial(result);
+                
+                free_polynomial(A);
+                free_polynomial(result);
+                
+                break;
+            }
+        #endif
+        
         default: return RCODE_NF;
     }
     
