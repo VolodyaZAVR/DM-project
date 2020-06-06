@@ -29,6 +29,7 @@ unsigned char call_Q(unsigned char n) {
                 
                 print("\n" RESULT);
                 write_fraction(result);
+                printf("\n");
                 
                 free_fraction(A);
                 free_fraction(result);
@@ -60,6 +61,7 @@ unsigned char call_Q(unsigned char n) {
                 
                 print("\n" RESULT);
                 write_fraction(result);
+                printf("\n");
                 
                 free_integer(A);
                 free_fraction(result);
@@ -93,6 +95,7 @@ unsigned char call_Q(unsigned char n) {
                 
                 print("\n" RESULT);
                 write_fraction(result);
+                printf("\n");
                 
                 free_fraction(A);
                 free_fraction(B);
@@ -111,6 +114,7 @@ unsigned char call_Q(unsigned char n) {
                 
                 print("\n" RESULT);
                 write_fraction(result);
+                printf("\n");
                 
                 free_fraction(A);
                 free_fraction(B);
@@ -129,6 +133,7 @@ unsigned char call_Q(unsigned char n) {
                 
                 print("\n" RESULT);
                 write_fraction(result);
+                printf("\n");
                 
                 free_fraction(A);
                 free_fraction(B);
@@ -147,6 +152,7 @@ unsigned char call_Q(unsigned char n) {
                 
                 print("\n" RESULT);
                 write_fraction(result);
+                printf("\n");
                 
                 free_fraction(A);
                 free_fraction(B);
