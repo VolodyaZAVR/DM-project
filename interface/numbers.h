@@ -866,18 +866,18 @@ fraction *read_fraction(const char *message) {
 void write_fraction(fraction *F) {
     
     if(F -> numerator -> sign == false)
-        putchar('-');
+        printf("- ");
     
     for(size_t i = (F -> numerator -> length) - 1; i != SIZE_MAX; --i)
         putchar(F -> numerator -> digits[i] + '0');
     
-    printf(" / ");
+    if((F -> denominator -> length != 1) && (F -> denominator -> digits[0] != 1)){
+
+        printf("/");
     
-    for(size_t i = (F -> denominator -> length) - 1; i != SIZE_MAX; --i)
-        putchar(F -> denominator -> digits[i] + '0');
-    
-    putchar('\n');
-    
+        for(size_t i = (F -> denominator -> length) - 1; i != SIZE_MAX; --i)
+            putchar(F -> denominator -> digits[i] + '0');
+    }
     fflush(stdout);
 }
 
@@ -990,14 +990,23 @@ polynomial *read_polynomial(const char *message) {
 
 
 void write_polynomial(polynomial *P) {
+	
+	int flag = 0;
     
-    for(size_t i = (P -> degree); i != SIZE_MAX; --i) {
+    for(size_t i = (P -> degree) + 1; i != SIZE_MAX + 1; --i){
         
-        fprintf(stderr, "    ");
-		unsigned long long t = (unsigned long long)i;	/* Windows size_t fix */
-        fprintf(stderr, PR_SIZET, t);
-        fprintf(stderr, DEG_FACTOR_OUT);
-        
-        write_fraction(P -> factors[i]);
+        if((P -> factors[i - 1] -> numerator -> length != 1) || (P ->factors[i - 1] -> numerator -> digits[0] != 0)){
+           
+           flag = 1;
+           
+            if((P -> factors[i - 1] -> numerator -> sign == true) && (i != (P -> degree + 1))) printf("+ ");
+            write_fraction(P -> factors[i - 1]);
+            
+            if(i > 2) printf("x^%d ", i - 1);
+            else if(i == 2) printf("x ");
+        }     
     }
+    
+    if(flag == 0) write_fraction(P -> factors[0]);
+    printf("\n");
 }
