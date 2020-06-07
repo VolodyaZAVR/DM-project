@@ -1023,8 +1023,9 @@ polynomial *read_polynomial(const char *message) {
         /* 2 - numerator, sign read, digit read     */
         /* 3 - denominator, no digits read          */
         /* 4 - denominator, digit read              */
-        /* 5 - degree, no digits read               */
-        /* 6 - degree, digit read                   */
+        /* 5 - x symbol                             */
+        /* 6 - degree, no digits read               */
+        /* 7 - degree, digit read                   */
         
         unsigned char mode = 0;
         
@@ -1050,7 +1051,7 @@ polynomial *read_polynomial(const char *message) {
         
         P -> factors[0] = init_fraction(one_num, one_denom);
         
-        free_integer(one_num);
+        one_num -> digits[0] = 1;
         
         char symbol = skip_spaces();
         
@@ -1081,6 +1082,11 @@ polynomial *read_polynomial(const char *message) {
                     sign = false;
                     mode = 1;
                     
+                } else if(symbol == 'x') {
+                    
+                    quotient = init_fraction(one_num, one_denom);
+                    mode = 5;
+                    
                 } else {
                     
                     /* Unexpected symbol */
@@ -1103,6 +1109,13 @@ polynomial *read_polynomial(const char *message) {
                     str[str_offset++] = symbol;
                     mode = 2;
                     
+                } else if(symbol == 'x') {
+                    
+                    quotient = init_fraction(one_num, one_denom);
+                    quotient -> numerator -> sign = sign;
+                    
+                    mode = 5;
+                    
                 } else {
                     
                     /* Unexpected symbol */
@@ -1124,7 +1137,7 @@ polynomial *read_polynomial(const char *message) {
                     
                     str[str_offset++] = symbol;
                     
-                } else if(symbol == '/' || symbol == '^' ||
+                } else if(symbol == '/' || symbol == 'x' ||
                           symbol == '+' || symbol == '-')
                 {
                     num = init_integer(str_offset);
@@ -1143,7 +1156,7 @@ polynomial *read_polynomial(const char *message) {
                         
                         mode = 3;
                         
-                    } else if(symbol == '^') {
+                    }  else if(symbol == 'x') {
                         
                         quotient = init_fraction(num, one_denom);
                         free_integer(num);
@@ -1161,7 +1174,7 @@ polynomial *read_polynomial(const char *message) {
                         P -> factors[0] = quotient;
                         quotient = NULL;
                         
-                        mode = 0;
+                        mode = 1;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1212,7 +1225,7 @@ polynomial *read_polynomial(const char *message) {
                     
                     str[str_offset++] = symbol;
                     
-                } else if(symbol == '^' || symbol == '+' ||
+                } else if(symbol == 'x' || symbol == '+' ||
                           symbol == '-')
                 {
                     denom = init_natural(str_offset);
@@ -1226,7 +1239,7 @@ polynomial *read_polynomial(const char *message) {
                     allocated = 1;
                     str = reallocate(str, allocated, offset);
                     
-                    if(symbol == '^') {
+                    if(symbol == 'x') {
                         
                         quotient = init_fraction(num, denom);
                         free_integer(num);
@@ -1248,7 +1261,7 @@ polynomial *read_polynomial(const char *message) {
                         P -> factors[0] = quotient;
                         quotient = NULL;
                         
-                        mode = 0;
+                        mode = 1;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1262,8 +1275,36 @@ polynomial *read_polynomial(const char *message) {
                     
                     success = false;
                 }
-                
+            
             } else if(mode == 5) {
+                
+                /* "x" */
+                
+                if(symbol == '^') {
+                    
+                    mode = 6;
+                    
+                } else if(symbol == '+' || symbol == '-') {
+                    
+                    expand_polynomial(P, 1);
+                    
+                    free_fraction(P -> factors[1]);
+                    P -> factors[1] = quotient;
+                    quotient = NULL;
+                    
+                    if(symbol == '+')
+                        sign = true;
+                    else
+                        sign = false;
+                        
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+                
+            } else if(mode == 6) {
                 
                 /* Reading degree, no digit read */
                 
@@ -1328,18 +1369,7 @@ polynomial *read_polynomial(const char *message) {
         
         if(feof(stdin)) terminate(RCODE_EOF);
         
-        if(success == false) {
-            
-            /* Skipping to newline */
-            
-            while(!feof(stdin) && symbol != '\n')
-                symbol = getchar();
-            
-            printf(UNEXP_SYMBOL "\n\n");
-            
-            free_polynomial(P);
-            
-        } else {
+        if(success == true) {
             
             if(mode == 0) {
                 
@@ -1390,6 +1420,16 @@ polynomial *read_polynomial(const char *message) {
                 
             } else if(mode == 5) {
                 
+                /* "x" */
+                
+                expand_polynomial(P, 1);
+                
+                free_fraction(P -> factors[1]);
+                P -> factors[1] = quotient;
+                quotient = NULL;
+                
+            } else if(mode == 6) {
+                
                 /* Degree, no digit read */
                 
                 success = false;
@@ -1404,6 +1444,18 @@ polynomial *read_polynomial(const char *message) {
                 P -> factors[degree] = quotient;
                 quotient = NULL;
             }
+        }
+        
+        if(success == false) {
+            
+            /* Skipping to newline */
+            
+            while(!feof(stdin) && symbol != '\n')
+                symbol = getchar();
+            
+            printf(UNEXP_SYMBOL "\n\n");
+            
+            free_polynomial(P);
         }
         
         free_natural(one_denom);
