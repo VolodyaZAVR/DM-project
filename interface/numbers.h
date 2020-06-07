@@ -86,6 +86,8 @@ natural *copy_natural(natural *N);                      /* Copy */
 
 void resize_natural(natural *N, size_t new_length);     /* Resize */
 
+void normalize_natural(natural *N);                     /* Remove leading zeros */
+
 void swap_natural(natural **A, natural **B);            /* Swap */
 
 void free_natural(natural *N);                          /* Remove from memory */
@@ -102,6 +104,8 @@ integer *init_integer(size_t length);                   /* Initialize */
 integer *copy_integer(integer *N);                      /* Copy */
 
 void resize_integer(integer *N, size_t new_length);     /* Resize */
+
+void normalize_integer(integer *N);                     /* Remove leading zeros */
 
 void swap_integer(integer **A, integer **B);            /* Swap */
 
@@ -272,6 +276,18 @@ void resize_natural(natural *N, size_t new_length) {
 }
 
 
+void normalize_natural(natural *N) {
+    
+    size_t i;
+    
+    for(i = N -> length - 1; i != 0; --i)
+        if(N -> digits[i] != 0)
+            break;
+    
+    resize_natural(N, i + 1);
+}
+
+
 void swap_natural(natural **A, natural **B) {
     
     natural *temp = *A;
@@ -439,6 +455,17 @@ void resize_integer(integer *N, size_t new_length) {
     
     N -> digits = reallocate(N -> digits, new_length * sizeof(*(N -> digits)), N -> offset_digits);
     N -> length = new_length;
+}
+
+void normalize_integer(integer *N) {
+    
+    size_t i;
+    
+    for(i = N -> length - 1; i != 0; --i)
+        if(N -> digits[i] != 0)
+            break;
+    
+    resize_integer(N, i + 1);
 }
 
 
@@ -1007,14 +1034,23 @@ polynomial *read_polynomial(const char *message) {
         char *str = mallocate(allocated * sizeof(*str), &offset);
         
         bool sign = true;
-        bool no_denom = true;
         
-        integer *num;
-        natural *denom;
-        fraction *quotient;
+        integer *num = NULL;
+        natural *denom = NULL;
+        fraction *quotient = NULL;
+        size_t degree = 0;
+        size_t degree_length = 0;
+        
+        integer *one_num = init_integer(1);
+        one_num -> digits[0] = 0;
+        one_num -> sign = true;
         
         natural *one_denom = init_natural(1);
         one_denom -> digits[0] = 1;
+        
+        P -> factors[0] = init_fraction(one_num, one_denom);
+        
+        free_integer(one_num);
         
         char symbol = skip_spaces();
         
@@ -1097,6 +1133,8 @@ polynomial *read_polynomial(const char *message) {
                     for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
                         num -> digits[str_offset - i] = str[i] - '0';
                     
+                    normalize_integer(num);
+                    
                     str_offset = 0;
                     allocated = 1;
                     str = reallocate(str, allocated, offset);
@@ -1104,23 +1142,26 @@ polynomial *read_polynomial(const char *message) {
                     if(symbol == '/') {
                         
                         mode = 3;
-                        no_denom = false;
                         
                     } else if(symbol == '^') {
                         
                         quotient = init_fraction(num, one_denom);
                         free_integer(num);
+                        num = NULL;
                         
                         mode = 5;
-                        no_denom = true;
                         
                     } else if(symbol == '+' || symbol == '-') {
                         
                         quotient = init_fraction(num, one_denom);
                         free_integer(num);
+                        num = NULL;
+                        
+                        free_fraction(P -> factors[0]);
+                        P -> factors[0] = quotient;
+                        quotient = NULL;
                         
                         mode = 0;
-                        no_denom = true;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1179,6 +1220,8 @@ polynomial *read_polynomial(const char *message) {
                     for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
                         denom -> digits[str_offset - i] = str[i] - '0';
                     
+                    normalize_natural(denom);
+                    
                     str_offset = 0;
                     allocated = 1;
                     str = reallocate(str, allocated, offset);
@@ -1188,6 +1231,8 @@ polynomial *read_polynomial(const char *message) {
                         quotient = init_fraction(num, denom);
                         free_integer(num);
                         free_natural(denom);
+                        num = NULL;
+                        denom = NULL;
                         
                         mode = 5;
                         
@@ -1196,9 +1241,14 @@ polynomial *read_polynomial(const char *message) {
                         quotient = init_fraction(num, denom);
                         free_integer(num);
                         free_natural(denom);
+                        num = NULL;
+                        denom = NULL;
+                        
+                        free_fraction(P -> factors[0]);
+                        P -> factors[0] = quotient;
+                        quotient = NULL;
                         
                         mode = 0;
-                        no_denom = true;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1212,10 +1262,155 @@ polynomial *read_polynomial(const char *message) {
                     
                     success = false;
                 }
+                
+            } else if(mode == 5) {
+                
+                /* Reading degree, no digit read */
+                
+                if(isdigit(symbol)) {
+                    
+                    degree *= 10;
+                    degree += symbol - '0';
+                    ++degree_length;
+                    mode = 6;
+                    
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+                
+            } else {
+                
+                /* Reading degree, digit read */
+                
+                if(degree_length > 9) {
+                    
+                    /* Too big degree */
+                    
+                    success = false;
+                
+                } else {
+                    
+                    if(isdigit(symbol)) {
+                        
+                        degree *= 10;
+                        degree += symbol - '0';
+                        ++degree_length;
+                        
+                    } else if(symbol == '+' || symbol == '-') {
+                        
+                        expand_polynomial(P, degree);
+                        
+                        free_fraction(P -> factors[degree]);
+                        P -> factors[degree] = quotient;
+                        quotient = NULL;
+                        
+                        mode = 0;
+                        
+                        if(symbol == '+')
+                            sign = true;
+                        else
+                            sign = false;
+                        
+                    } else {
+                        
+                        /* Unexpected symbol */
+                        
+                        success = false;
+                    }
+                }
+            }
+            
+            symbol = skip_spaces();
+        }
+        
+        if(feof(stdin)) terminate(RCODE_EOF);
+        
+        if(success == false) {
+            
+            /* Skipping to newline */
+            
+            while(!feof(stdin) && symbol != '\n')
+                symbol = getchar();
+            
+            printf(UNEXP_SYMBOL "\n\n");
+            
+            free_polynomial(P);
+            
+        } else {
+            
+            if(mode == 0) {
+                
+                /* Numerator, sign not read */
+                
+                success = false;
+                
+            } else if(mode == 1) {
+               
+                /* Numerator, sign read, no digit */
+                
+                success = false;
+                
+            } else if(mode == 2) {
+                
+                /* Numerator, digit read */
+                
+                num = init_integer(str_offset);
+                num -> sign = sign;
+                
+                for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
+                    num -> digits[str_offset - i] = str[i] - '0';
+                
+                normalize_integer(num);
+                
+                free_fraction(P -> factors[0]);
+                P -> factors[0] = init_fraction(num, one_denom);
+                
+            } else if(mode == 3) {
+                
+                /* Denominator, no digit read */
+                
+                success = false;
+                
+            } else if(mode == 4) {
+                
+                /* Denominator, digit read */
+                
+                denom = init_natural(str_offset);
+                
+                for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
+                    denom -> digits[str_offset - i] = str[i] - '0';
+                
+                normalize_natural(denom);
+                
+                free_fraction(P -> factors[0]);
+                P -> factors[0] = init_fraction(num, denom);
+                
+            } else if(mode == 5) {
+                
+                /* Degree, no digit read */
+                
+                success = false;
+                
+            } else {
+                
+                /* Degree, digit read */
+                
+                expand_polynomial(P, degree);
+                
+                free_fraction(P -> factors[degree]);
+                P -> factors[degree] = quotient;
+                quotient = NULL;
             }
         }
         
-        getchar();
+        free_natural(one_denom);
+        if(num != NULL) free_integer(num);
+        if(denom != NULL) free_natural(denom);
+        if(quotient != NULL) free_fraction(quotient);
+        free_logged(str, offset);
     }
     
     return P;
