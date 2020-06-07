@@ -5,8 +5,6 @@
 [![Build status](https://github.com/VolodyaZAVR/DM-project/workflows/Build/badge.svg)](https://github.com/VolodyaZAVR/DM-project/actions?query=workflow%3ABuild)
 [![Test status](https://github.com/VolodyaZAVR/DM-project/workflows/Test/badge.svg)](https://github.com/VolodyaZAVR/DM-project/actions?query=workflow%3ATest)
 
-## [Исполняемый файл для Windows](https://github.com/VolodyaZAVR/DM-project/raw/master/dmcp.exe)
-
 Это лишь экспериментальная версия оболочки. В ней запросто могут найтись ошибки и недоработки. Обо всех проблемах, пожалуйста, сообщайте лично или через "Issues" на GitHub.
 
 ### Как это работает?

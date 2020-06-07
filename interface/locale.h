@@ -29,8 +29,8 @@
 #define FIRST_FRACT     "First fraction (e.g. -123 / 456): "
 #define SECOND_FRACT    "Second fraction (e.g. -123 / 456): "
 
-#define FIRST_POLY      "First argument (polynomial)\n"
-#define SECOND_POLY     "Second argument (polynomial)\n"
+#define FIRST_POLY      "First argument (polynomial): "
+#define SECOND_POLY     "Second argument (polynomial): "
 
 #define DEGREE          "    Degree: "
 

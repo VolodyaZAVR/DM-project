@@ -135,6 +135,8 @@ void resize_polynomial(polynomial *P, size_t new_degree);   /* Change degree */
 
 void normalize_polynomial(polynomial *P);                   /* Remove unnecessary zero factors */
 
+void expand_polynomial(polynomial *P, size_t new_degree);   /* Expand with zero filling */
+
 void free_polynomial(polynomial *P);                        /* Remove from memory */
 
 polynomial *read_polynomial(const char *message);           /* Read */
@@ -940,6 +942,33 @@ void normalize_polynomial(polynomial *P) {
 }
 
 
+void expand_polynomial(polynomial *P, size_t new_degree) {
+    
+    if(P -> degree <= new_degree) return;
+    
+    size_t old_degree = P -> degree;
+    
+    integer *num = init_integer(1);
+    num -> sign = true;
+    num -> digits[0] = 0;
+    
+    natural *denom = init_natural(1);
+    num -> digits[0] = 1;
+    
+    fraction *zero = init_fraction(num, denom);
+    
+    free_integer(num);
+    free_natural(denom);
+    
+    resize_polynomial(P, new_degree);
+    
+    P -> factors[old_degree + 1] = zero;
+    
+    for(size_t i = old_degree + 2; i <= P -> degree; ++i)
+        P -> factors[i] = copy_fraction(zero);
+}
+
+
 void free_polynomial(polynomial *P) {
     
     for(size_t i = 0; i <= (P -> degree); ++i)
@@ -951,39 +980,243 @@ void free_polynomial(polynomial *P) {
 
 polynomial *read_polynomial(const char *message) {
     
-    /* Initializing polynomial */
+    polynomial *P;
     
-    size_t offset;
-    polynomial *P = mallocate(sizeof(*P), &offset);
+    bool success = false;
     
-    P -> offset_struct = offset;
-    
-    print(message);
-    
-    /* Reading polynomial */
-    
-    P -> degree = read_int(DEGREE);
-    
-    P -> factors = mallocate(((P -> degree) + 1) * sizeof(fraction), &offset);
-    
-    P -> offset_factors = offset;
-    
-    char hint[4 + 20 + strlen(DEG_FACTOR)];
-    
-    strcpy(hint, "    ");
-    
-    for(size_t i = P -> degree; i != SIZE_MAX; --i) {
+    while(success == false) {
         
-		unsigned long long t = (unsigned long long)i;	/* Windows size_t fix */
-		
-        int length = sprintf(hint + 4, PR_SIZET, t);
-        strcpy(hint + 4 + length, DEG_FACTOR);
-        fraction *Q = read_fraction(hint);
+        success = true;
+        print(message);
         
-        P -> factors[i] = Q;
+        P = init_polynomial(0);
+        
+        /* 0 - numerator, sign not read             */
+        /* 1 - numerator, sign read, no digits read */
+        /* 2 - numerator, sign read, digit read     */
+        /* 3 - denominator, no digits read          */
+        /* 4 - denominator, digit read              */
+        /* 5 - degree, no digits read               */
+        /* 6 - degree, digit read                   */
+        
+        unsigned char mode = 0;
+        
+        size_t offset;
+        size_t allocated = 1;
+        size_t str_offset = 0;
+        char *str = mallocate(allocated * sizeof(*str), &offset);
+        
+        bool sign = true;
+        bool no_denom = true;
+        
+        integer *num;
+        natural *denom;
+        fraction *quotient;
+        
+        natural *one_denom = init_natural(1);
+        one_denom -> digits[0] = 1;
+        
+        char symbol = skip_spaces();
+        
+        while(!feof(stdin) && symbol != '\n' && success == true) {
+            
+            if(mode == 0) {
+                
+                /* Reading numerator, sign not read */
+                
+                if(isdigit(symbol)) {
+                    
+                    if(str_offset == allocated) {
+                        
+                        allocated *= 2;
+                        str = reallocate(str, allocated, offset);
+                    }
+                    
+                    str[str_offset++] = symbol;
+                    mode = 2;
+                    
+                } else if(symbol == '+') {
+                    
+                    sign = true;
+                    mode = 1;
+                    
+                } else if(symbol == '-') {
+                    
+                    sign = false;
+                    mode = 1;
+                    
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+                
+            } else if(mode == 1) {
+                
+                /* Reading numerator, sign known, no digits read */
+                
+                if(isdigit(symbol)) {
+                    
+                    if(str_offset == allocated) {
+                        
+                        allocated *= 2;
+                        str = reallocate(str, allocated, offset);
+                    }
+                    
+                    str[str_offset++] = symbol;
+                    mode = 2;
+                    
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+                
+            } else if(mode == 2) {
+                
+                /* Reading numerator, digit read */
+                
+                if(isdigit(symbol)) {
+                    
+                    if(str_offset == allocated) {
+                        
+                        allocated *= 2;
+                        str = reallocate(str, allocated, offset);
+                    }
+                    
+                    str[str_offset++] = symbol;
+                    
+                } else if(symbol == '/' || symbol == '^' ||
+                          symbol == '+' || symbol == '-')
+                {
+                    num = init_integer(str_offset);
+                    num -> sign = sign;
+                    
+                    for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
+                        num -> digits[str_offset - i] = str[i] - '0';
+                    
+                    str_offset = 0;
+                    allocated = 1;
+                    str = reallocate(str, allocated, offset);
+                    
+                    if(symbol == '/') {
+                        
+                        mode = 3;
+                        no_denom = false;
+                        
+                    } else if(symbol == '^') {
+                        
+                        quotient = init_fraction(num, one_denom);
+                        free_integer(num);
+                        
+                        mode = 5;
+                        no_denom = true;
+                        
+                    } else if(symbol == '+' || symbol == '-') {
+                        
+                        quotient = init_fraction(num, one_denom);
+                        free_integer(num);
+                        
+                        mode = 0;
+                        no_denom = true;
+                        
+                        if(symbol == '+')
+                            sign = true;
+                        else
+                            sign = false;
+                    }
+                    
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+                
+            } else if(mode == 3) {
+                
+                /* Reading denominator, no digits read */
+                
+                if(isdigit(symbol)) {
+                    
+                    if(str_offset == allocated) {
+                        
+                        allocated *= 2;
+                        str = reallocate(str, allocated, offset);
+                    }
+                    
+                    str[str_offset++] = symbol;
+                    mode = 4;
+                    
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+                
+            } else if(mode == 4) {
+                
+                /* Reading denominator, digit read */
+                
+                if(isdigit(symbol)) {
+                    
+                    if(str_offset == allocated) {
+                        
+                        allocated *= 2;
+                        str = reallocate(str, allocated, offset);
+                    }
+                    
+                    str[str_offset++] = symbol;
+                    
+                } else if(symbol == '^' || symbol == '+' ||
+                          symbol == '-')
+                {
+                    denom = init_natural(str_offset);
+                    
+                    for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
+                        denom -> digits[str_offset - i] = str[i] - '0';
+                    
+                    str_offset = 0;
+                    allocated = 1;
+                    str = reallocate(str, allocated, offset);
+                    
+                    if(symbol == '^') {
+                        
+                        quotient = init_fraction(num, denom);
+                        free_integer(num);
+                        free_natural(denom);
+                        
+                        mode = 5;
+                        
+                    } else if(symbol == '+' || symbol == '-') {
+                        
+                        quotient = init_fraction(num, denom);
+                        free_integer(num);
+                        free_natural(denom);
+                        
+                        mode = 0;
+                        no_denom = true;
+                        
+                        if(symbol == '+')
+                            sign = true;
+                        else
+                            sign = false;
+                    }
+                    
+                } else {
+                    
+                    /* Unexpected symbol */
+                    
+                    success = false;
+                }
+            }
+        }
+        
+        getchar();
     }
-    
-    print("\n");
     
     return P;
 }
