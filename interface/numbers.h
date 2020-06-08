@@ -1378,7 +1378,7 @@ polynomial *read_polynomial(const char *message) {
                         
                         degree = 0;
                         
-                        mode = 0;
+                        mode = 1;
                         last = 7;
                         
                         if(symbol == '+')
