@@ -45,7 +45,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P2(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -63,7 +63,7 @@ unsigned char call_P(unsigned char n) {
                 fraction *B = read_fraction(SECOND_FRACT);
                 polynomial *result = P3(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -81,7 +81,7 @@ unsigned char call_P(unsigned char n) {
                 int b = read_int(SECOND_ARG_INT);
                 polynomial *result = P4(A, (size_t)b);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -145,7 +145,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P8(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -163,7 +163,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P9(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -181,7 +181,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P10(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -199,7 +199,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P11(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -216,7 +216,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *A = read_polynomial(FIRST_POLY);
                 polynomial *result = P12(A);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
@@ -232,7 +232,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *A = read_polynomial(FIRST_POLY);
                 polynomial *result = P13(A);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
