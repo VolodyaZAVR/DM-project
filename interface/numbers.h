@@ -971,7 +971,7 @@ void normalize_polynomial(polynomial *P) {
 
 void expand_polynomial(polynomial *P, size_t new_degree) {
     
-    if(P -> degree <= new_degree) return;
+    if(P -> degree >= new_degree) return;
     
     size_t old_degree = P -> degree;
     
@@ -1028,6 +1028,7 @@ polynomial *read_polynomial(const char *message) {
         /* 7 - degree, digit read                   */
         
         unsigned char mode = 0;
+        unsigned char last = 0;
         
         size_t offset;
         size_t allocated = 1;
@@ -1108,6 +1109,7 @@ polynomial *read_polynomial(const char *message) {
                     
                     str[str_offset++] = symbol;
                     mode = 2;
+                    last = 1;
                     
                 } else if(symbol == 'x') {
                     
@@ -1144,7 +1146,7 @@ polynomial *read_polynomial(const char *message) {
                     num -> sign = sign;
                     
                     for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
-                        num -> digits[str_offset - i] = str[i] - '0';
+                        num -> digits[str_offset - i - 1] = str[i] - '0';
                     
                     normalize_integer(num);
                     
@@ -1155,6 +1157,7 @@ polynomial *read_polynomial(const char *message) {
                     if(symbol == '/') {
                         
                         mode = 3;
+                        last = 2;
                         
                     }  else if(symbol == 'x') {
                         
@@ -1163,6 +1166,7 @@ polynomial *read_polynomial(const char *message) {
                         num = NULL;
                         
                         mode = 5;
+                        last = 2;
                         
                     } else if(symbol == '+' || symbol == '-') {
                         
@@ -1175,6 +1179,7 @@ polynomial *read_polynomial(const char *message) {
                         quotient = NULL;
                         
                         mode = 1;
+                        last = 2;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1203,6 +1208,7 @@ polynomial *read_polynomial(const char *message) {
                     
                     str[str_offset++] = symbol;
                     mode = 4;
+                    last = 3;
                     
                 } else {
                     
@@ -1231,7 +1237,7 @@ polynomial *read_polynomial(const char *message) {
                     denom = init_natural(str_offset);
                     
                     for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
-                        denom -> digits[str_offset - i] = str[i] - '0';
+                        denom -> digits[str_offset - i - 1] = str[i] - '0';
                     
                     normalize_natural(denom);
                     
@@ -1248,6 +1254,7 @@ polynomial *read_polynomial(const char *message) {
                         denom = NULL;
                         
                         mode = 5;
+                        last = 4;
                         
                     } else if(symbol == '+' || symbol == '-') {
                         
@@ -1262,6 +1269,7 @@ polynomial *read_polynomial(const char *message) {
                         quotient = NULL;
                         
                         mode = 1;
+                        last = 4;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1285,12 +1293,24 @@ polynomial *read_polynomial(const char *message) {
                     mode = 6;
                     
                 } else if(symbol == '+' || symbol == '-') {
-                    
+                        
                     expand_polynomial(P, 1);
-                    
                     free_fraction(P -> factors[1]);
-                    P -> factors[1] = quotient;
-                    quotient = NULL;
+                    
+                    if(last == 0) {
+                        
+                        P -> factors[1] = init_fraction(one_num, one_denom);
+                        P -> factors[1] -> numerator -> sign = sign;
+                        quotient = NULL;
+                        
+                    } else {
+                        
+                        P -> factors[1] = quotient;
+                        quotient = NULL;
+                    }
+                    
+                    mode = 1;
+                    last = 5;
                     
                     if(symbol == '+')
                         sign = true;
@@ -1313,7 +1333,9 @@ polynomial *read_polynomial(const char *message) {
                     degree *= 10;
                     degree += symbol - '0';
                     ++degree_length;
-                    mode = 6;
+                    
+                    mode = 7;
+                    last = 6;
                     
                 } else {
                     
@@ -1349,6 +1371,7 @@ polynomial *read_polynomial(const char *message) {
                         quotient = NULL;
                         
                         mode = 0;
+                        last = 7;
                         
                         if(symbol == '+')
                             sign = true;
@@ -1391,7 +1414,7 @@ polynomial *read_polynomial(const char *message) {
                 num -> sign = sign;
                 
                 for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
-                    num -> digits[str_offset - i] = str[i] - '0';
+                    num -> digits[str_offset - i - 1] = str[i] - '0';
                 
                 normalize_integer(num);
                 
@@ -1411,7 +1434,7 @@ polynomial *read_polynomial(const char *message) {
                 denom = init_natural(str_offset);
                 
                 for(size_t i = str_offset - 1; i != SIZE_MAX; --i)
-                    denom -> digits[str_offset - i] = str[i] - '0';
+                    denom -> digits[str_offset - i - 1] = str[i] - '0';
                 
                 normalize_natural(denom);
                 
@@ -1423,10 +1446,17 @@ polynomial *read_polynomial(const char *message) {
                 /* "x" */
                 
                 expand_polynomial(P, 1);
-                
                 free_fraction(P -> factors[1]);
-                P -> factors[1] = quotient;
-                quotient = NULL;
+                
+                if(last == 0) {
+                    
+                    P -> factors[1] = init_fraction(one_num, one_denom);
+                    
+                } else {
+                    
+                    P -> factors[1] = quotient;
+                    quotient = NULL;
+                }
                 
             } else if(mode == 6) {
                 
@@ -1458,12 +1488,15 @@ polynomial *read_polynomial(const char *message) {
             free_polynomial(P);
         }
         
+        free_integer(one_num);
         free_natural(one_denom);
         if(num != NULL) free_integer(num);
         if(denom != NULL) free_natural(denom);
         if(quotient != NULL) free_fraction(quotient);
         free_logged(str, offset);
     }
+    
+    write_polynomial(P);
     
     return P;
 }
