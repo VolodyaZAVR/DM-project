@@ -980,7 +980,7 @@ void expand_polynomial(polynomial *P, size_t new_degree) {
     num -> digits[0] = 0;
     
     natural *denom = init_natural(1);
-    num -> digits[0] = 1;
+    denom -> digits[0] = 1;
     
     fraction *zero = init_fraction(num, denom);
     
