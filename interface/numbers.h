@@ -145,6 +145,8 @@ void free_polynomial(polynomial *P);                        /* Remove from memor
 
 polynomial *read_polynomial(const char *message);           /* Read */
 
+void write_quotient(fraction *Q, size_t degree, bool first);    /* Write quotient */
+
 void write_polynomial(polynomial *P);                       /* Write to stdout */
 
 
@@ -300,6 +302,7 @@ void free_natural(natural *N) {
 	
 	/* TEMPORARY BUGFIX */
 	
+    /*
 	bool correct_address = false;
 	
 	for(size_t i = 0; i < pointers_offset; ++i) {
@@ -311,7 +314,7 @@ void free_natural(natural *N) {
 	}
 	
 	if(correct_address == false) return;
-	
+    */
     
     free_logged(N -> digits, N -> offset_digits);
     
@@ -481,6 +484,7 @@ void free_integer(integer *N) {
 	
 	/* TEMPORARY BUGFIX */
 	
+    /*
 	bool correct_address = false;
 	
 	for(size_t i = 0; i < pointers_offset; ++i) {
@@ -492,7 +496,7 @@ void free_integer(integer *N) {
 	}
 	
 	if(correct_address == false) return;
-	
+    */
     
     free_logged(N -> digits, N -> offset_digits);
     
@@ -642,6 +646,7 @@ void free_fraction(fraction *F) {
     
 	/* TEMPORARY BUGFIX */
 	
+    /*
 	bool correct_address = false;
 	
 	for(size_t i = 0; i < pointers_offset; ++i) {
@@ -653,6 +658,7 @@ void free_fraction(fraction *F) {
 	}
 	
 	if(correct_address == false) return;
+    */
     
     free_integer(F -> numerator);
     free_natural(F -> denominator);
@@ -1496,21 +1502,66 @@ polynomial *read_polynomial(const char *message) {
         free_logged(str, offset);
     }
     
-    write_polynomial(P);
+    normalize_polynomial(P);
     
     return P;
 }
 
 
+void write_quotient(fraction *Q, size_t degree, bool first) {
+    
+    if(Q -> numerator -> length > 1 || Q -> numerator -> digits[0] != 0 ||
+       first == true)
+    {
+        if(Q -> numerator -> sign == true) {
+            
+            if(first == false)
+                printf(" + ");
+            
+        } else {
+            
+            if(first == false)
+                printf(" - ");
+            else
+                putchar('-');
+        }
+        
+        if(Q -> numerator -> length > 1 || Q -> numerator -> digits[0] != 1 ||
+           Q -> denominator -> length > 1 || Q -> denominator -> digits[0] != 1 ||
+           degree == 0)
+        {
+            for(size_t i = Q -> numerator -> length - 1; i != SIZE_MAX; --i)
+                putchar(Q -> numerator -> digits[i] + '0');
+            
+            if(Q -> denominator -> length > 1 || Q -> denominator -> digits[0] != 1) {
+                
+                putchar('/');
+                
+                for(size_t i = Q -> denominator -> length - 1; i != SIZE_MAX; --i)
+                    putchar(Q -> denominator -> digits[i] + '0');
+            }
+        }
+        
+        if(degree > 1) {
+            
+            printf("x^" PR_SIZET, (unsigned long long)degree);
+            
+        } else if(degree == 1) {
+            
+            putchar('x');
+        }
+    }
+}
+
+
 void write_polynomial(polynomial *P) {
     
-    for(size_t i = (P -> degree); i != SIZE_MAX; --i) {
-        
-        fprintf(stderr, "    ");
-		unsigned long long t = (unsigned long long)i;	/* Windows size_t fix */
-        fprintf(stderr, PR_SIZET, t);
-        fprintf(stderr, DEG_FACTOR_OUT);
-        
-        write_fraction(P -> factors[i]);
-    }
+    write_quotient(P -> factors[P -> degree], P -> degree, true);
+    
+    for(size_t i = P -> degree - 1; i != SIZE_MAX; --i)
+        write_quotient(P -> factors[i], i, false);
+    
+    fflush(stdout);
+    
+    print("\n"); fflush(stderr);
 }

@@ -27,7 +27,7 @@ unsigned char call_P(unsigned char n) {
                 polynomial *B = read_polynomial(SECOND_POLY);
                 polynomial *result = P1(A, B);
                 
-                print("\n" RESULT "\n");
+                print("\n" RESULT);
                 write_polynomial(result);
                 
                 free_polynomial(A);
