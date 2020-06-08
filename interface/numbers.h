@@ -1376,6 +1376,8 @@ polynomial *read_polynomial(const char *message) {
                         P -> factors[degree] = quotient;
                         quotient = NULL;
                         
+                        degree = 0;
+                        
                         mode = 0;
                         last = 7;
                         
